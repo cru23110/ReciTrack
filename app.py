@@ -8,9 +8,9 @@ usuarios = [
     {'correo': 'usuario3@example.com', 'contrasena': 'contrasena3', 'nombre': 'Linda', 'puntos': 120},
 ]
 
-# Datos de prueba de seguimientos de reciclaje (reemplaza con tus datos reales)
+# Datos de prueba de seguimientos de reciclaje 
 seguimientos = []
-# Datos de prueba de actividades de reciclaje (reemplaza con tus datos reales)
+# Datos de prueba de actividades de reciclaje
 actividades_reciclaje = []
 
 # Ruta principal que renderiza la página de inicio

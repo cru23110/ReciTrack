@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300&display=swap" rel="stylesheet">
+    <title>Index</title>
 </head>
 <body>
-    <h1>Bienvenido a la Página de Inicio</h1>
-    
     <!-- Menú principal -->
-    <header>
-        <ul>
+    <header id="header">
+        <ul id="mainMenu">
             <li><a href="/">Inicio</a></li>
             <li><a href="/registro_actividades">Registro de Actividades de Reciclaje</a></li>
             <li><a href="/seguimiento">Seguimiento de Reciclaje</a></li>
@@ -18,5 +20,6 @@
             <li><a href="/inicio_sesion">Iniciar Sesión</a></li>
         </ul>
     </header>
+    <h1>Bienvenido a la Página de Inicio</h1>
 </body>
 </html>
