@@ -13,6 +13,11 @@ seguimientos = []
 # Datos de prueba de actividades de reciclaje (reemplaza con tus datos reales)
 actividades_reciclaje = []
 
+# Ruta principal que renderiza la página de inicio
+@app.route('/')
+def inicio():
+    return render_template('index.html')
+
 @app.route('/inicio_sesion', methods=['GET', 'POST'])
 def inicio_sesion():
     if request.method == 'POST':
