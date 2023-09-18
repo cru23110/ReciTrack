@@ -10,6 +10,8 @@ usuarios = [
 
 # Datos de prueba de seguimientos de reciclaje (reemplaza con tus datos reales)
 seguimientos = []
+# Datos de prueba de actividades de reciclaje (reemplaza con tus datos reales)
+actividades_reciclaje = []
 
 @app.route('/inicio_sesion', methods=['GET', 'POST'])
 def inicio_sesion():
@@ -90,6 +92,23 @@ def seguir():
         # Redirigir al usuario a la página de inicio o a donde sea necesario
         return redirect(url_for('pagina_inicio'))
 
+# Linda
+@app.route('/registro_actividades', methods=['GET'])
+def registro_actividades():
+    return render_template('registro_actividades.html')
 
+@app.route('/registrar_actividad', methods=['POST'])
+def registrar_actividad():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        material = request.form['material']
+        cantidad = int(request.form['cantidad'])
+        
+        # Agregar la actividad de reciclaje a la lista (simulación)
+        actividades_reciclaje.append({'material': material, 'cantidad': cantidad})
+        
+        # Redirigir al usuario a la página de inicio o a donde sea necesario
+        return redirect(url_for('pagina_inicio'))
+    
 if __name__ == '__main__':
     app.run(debug=True)

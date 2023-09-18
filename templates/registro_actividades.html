@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>registro_actividades</title>
+</head>
+<body>
+    <!-- Menú principal -->
+    <header>
+        <ul>
+            <li><a href="/registro_actividades">Registro de Actividades de Reciclaje</a></li>
+            <li><a href="/seguimiento">Seguimiento de Reciclaje</a></li>
+            <li><a href="/ranking_comunitario">Ranking Comunitario</a></li>
+            <li><a href="/inicio_sesion">Iniciar Sesión</a></li>
+        </ul>
+    </header>
+    <h1>Registro de Actividades de Reciclaje</h1>
+    <form method="POST" action="/registrar_actividad">
+        <label for="material">Material:</label>
+        <input type="text" id="material" name="material" required><br>
+        
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" name="cantidad" required><br>
+        
+        <input type="submit" value="Registrar Actividad">
+    </form>
+</body>
+</html>
