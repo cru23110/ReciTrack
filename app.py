@@ -8,6 +8,8 @@ usuarios = [
     {'correo': 'usuario3@example.com', 'contrasena': 'contrasena3', 'nombre': 'Linda', 'puntos': 120},
 ]
 
+# Datos de prueba de seguimientos de reciclaje (reemplaza con tus datos reales)
+seguimientos = []
 
 @app.route('/inicio_sesion', methods=['GET', 'POST'])
 def inicio_sesion():
@@ -46,6 +48,48 @@ def autenticar_usuario(correo, contrasena):
         if usuario['correo'] == correo and usuario['contrasena'] == contrasena:
             return True
     return False
+
+# Mia
+@app.route('/registro', methods=['GET'])
+def registro():
+    return render_template('registro.html')
+
+@app.route('/registrar', methods=['POST'])
+def registrar():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre = request.form['nombre']
+        correo = request.form['correo']
+        contrasena = request.form['contrasena']
+        
+        # Comprobar si el correo ya está registrado (simulación)
+        if any(usuario['correo'] == correo for usuario in usuarios):
+            error = "El correo electrónico ya está registrado. Inicia sesión o utiliza otro correo."
+            return render_template('registro.html', error=error)
+        
+        # Agregar el nuevo usuario a la lista (simulación)
+        usuarios.append({'nombre': nombre, 'correo': correo, 'contrasena': contrasena, 'puntos': 0})
+        
+        # Redirigir al usuario a la página de inicio de sesión o a donde sea necesario
+        return redirect(url_for('inicio_sesion'))
+    
+@app.route('/seguimiento', methods=['GET'])
+def seguimiento():
+    return render_template('seguimiento.html')
+
+@app.route('/seguir', methods=['POST'])
+def seguir():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        material = request.form['material']
+        cantidad = int(request.form['cantidad'])
+        
+        # Agregar el seguimiento a la lista (simulación)
+        seguimientos.append({'material': material, 'cantidad': cantidad})
+        
+        # Redirigir al usuario a la página de inicio o a donde sea necesario
+        return redirect(url_for('pagina_inicio'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
