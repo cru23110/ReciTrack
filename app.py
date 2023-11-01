@@ -2,13 +2,68 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
 app = Flask(__name__, template_folder='templates')
-db = sqlite3.connect('reciclaje.db')
 
-usuarios = [
-    {'correo': 'usuario1@example.com', 'contrasena': 'contrasena1', 'nombre': 'Juan', 'puntos': 100},
-    {'correo': 'usuario2@example.com', 'contrasena': 'contrasena2', 'nombre': 'Mia', 'puntos': 85},
-    {'correo': 'usuario3@example.com', 'contrasena': 'contrasena3', 'nombre': 'Linda', 'puntos': 120},
-]
+def crear_bd():
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+
+    # Crear tablas en la base de datos (aquí debes definir la estructura de tus tablas)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY,
+            nombre TEXT,
+            correo TEXT,
+            contrasena TEXT,
+            puntos INTEGER
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS seguimientos (
+            id INTEGER PRIMARY KEY,
+            material TEXT,
+            cantidad INTEGER
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS actividades_reciclaje (
+            id INTEGER PRIMARY KEY,
+            material TEXT,
+            cantidad INTEGER
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+def conectar_bd():
+    return sqlite3.connect('reciclaje.db')
+
+def obtener_usuarios():
+    conn = conectar_bd()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM usuarios')
+    usuarios = cursor.fetchall()
+
+    # Crear una lista de diccionarios a partir de los resultados
+    lista_usuarios = []
+    for usuario in usuarios:
+        lista_usuarios.append({
+            'id': usuario[0],
+            'nombre': usuario[1],
+            'correo': usuario[2],
+            'puntos': usuario[3],
+            'contrasena': usuario[4]
+        })
+
+    conn.close()
+    return lista_usuarios
+
+# usuarios = [
+#     {'correo': 'usuario1@example.com', 'contrasena': 'contrasena1', 'nombre': 'Juan', 'puntos': 100},
+#     {'correo': 'usuario2@example.com', 'contrasena': 'contrasena2', 'nombre': 'Mia', 'puntos': 85},
+#     {'correo': 'usuario3@example.com', 'contrasena': 'contrasena3', 'nombre': 'Linda', 'puntos': 120},
+# ]
 
 # Datos de prueba de seguimientos de reciclaje 
 seguimientos = []
@@ -47,6 +102,9 @@ def pagina_inicio():
 
 @app.route('/ranking_comunitario')
 def ranking_comunitario():
+    # Obtener la lista de usuarios desde la base de datos
+    usuarios = obtener_usuarios()
+    
     # Ordena la lista de usuarios por puntos en orden descendente
     usuarios_ordenados = sorted(usuarios, key=lambda x: x['puntos'], reverse=True)
     
@@ -55,6 +113,7 @@ def ranking_comunitario():
 
 # Función de autenticación (simulada en este ejemplo)
 def autenticar_usuario(correo, contrasena):
+    
     for usuario in usuarios:
         if usuario['correo'] == correo and usuario['contrasena'] == contrasena:
             return True
