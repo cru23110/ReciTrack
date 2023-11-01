@@ -20,6 +20,12 @@
             <li><a href="/inicio_sesion">Iniciar Sesión</a></li>
         </ul>
     </header>
-    <h1>Bienvenido a la Página de Inicio</h1>
+    <h1 class="pageTitle">Bienvenido a la Página de Inicio</h1>
+    <h2>Sugerencias de Reciclaje:</h2>
+    <ul>
+        {% for sugerencia in sugerencias %}
+            <li>{{ sugerencia }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

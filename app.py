@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 
 app = Flask(__name__, template_folder='templates')
+db = sqlite3.connect('reciclaje.db')
 
 usuarios = [
     {'correo': 'usuario1@example.com', 'contrasena': 'contrasena1', 'nombre': 'Juan', 'puntos': 100},
@@ -16,7 +18,9 @@ actividades_reciclaje = []
 # Ruta principal que renderiza la página de inicio
 @app.route('/')
 def inicio():
-    return render_template('index.html')
+    # Lógica para generar sugerencias de reciclaje
+    sugerencias = ['Recicla tus botellas de plástico', 'Reutiliza papel para hacer manualidades', 'Separa vidrio del resto de la basura', '...']
+    return render_template('index.html', sugerencias=sugerencias)
 
 @app.route('/inicio_sesion', methods=['GET', 'POST'])
 def inicio_sesion():
@@ -98,8 +102,19 @@ def seguir():
         return redirect(url_for('pagina_inicio'))
 
 # Linda
-@app.route('/registro_actividades', methods=['GET'])
+@app.route('/registro_actividades', methods=['GET', 'POST'])
 def registro_actividades():
+    if request.method == 'POST':
+        material = request.form['material']
+        cantidad = int(request.form['cantidad'])
+        categoria = request.form['categoria']  # Agregar un campo de selección de categoría en el formulario
+        
+        # Agregar la actividad de reciclaje con categoría a la lista (simulación)
+        actividades_reciclaje.append({'material': material, 'cantidad': cantidad, 'categoria': categoria})
+        
+        # Redirigir al usuario a la página de inicio o a donde sea necesario
+        return redirect(url_for('pagina_inicio'))
+    
     return render_template('registro_actividades.html')
 
 @app.route('/registrar_actividad', methods=['POST'])

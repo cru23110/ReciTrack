@@ -36,3 +36,10 @@
     text-decoration: none;
     color: var(--color-naranja);
 }
+
+.pageTitle{
+  color:var(--color-violeta);
+  font-weight: 700;
+  font-size: 69px;
+  text-align: center;
+}
