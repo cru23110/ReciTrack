@@ -1,1 +1,6 @@
 @import url('main.css');
+
+.contentRanking{
+    display: flex;
+    justify-content: space-around;
+}

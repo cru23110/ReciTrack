@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='ranking_comunitario.css') }}">
     <title>ranking_comunitario</title>
 </head>
 <body>
@@ -18,21 +19,23 @@
         </ul>
     </header>
     <h1 class="pageTitle">Ranking Comunitario</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Puntos</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
+    <section class="contentRanking">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ usuario.nombre }}</td>
-                    <td>{{ usuario.puntos }}</td>
+                    <th>Nombre</th>
+                    <th>Puntos</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.puntos }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 </body>
 </html>
