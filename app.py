@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 
 app = Flask(__name__, template_folder='templates')
+app.secret_key = 'tu_clave_secreta'
 
 def crear_bd():
     conn = sqlite3.connect('reciclaje.db')
@@ -81,21 +82,83 @@ def inicio():
 @app.route('/inicio_sesion', methods=['GET', 'POST'])
 def inicio_sesion():
     if request.method == 'POST':
-        # Obtener los datos del formulario
         correo = request.form['correo']
         contrasena = request.form['contrasena']
         
-        # Realizar la autenticación (simulada en este ejemplo)
-        if autenticar_usuario(correo, contrasena):
-            # Autenticación exitosa, redirigir a la página de inicio o a donde sea necesario
-            return redirect(url_for('pagina_inicio'))
+        # Realizar la autenticación utilizando la base de datos
+        if autenticar_usuario_bd(correo, contrasena):
+            # Autenticación exitosa, establecer la sesión y redirigir
+            session['usuario'] = correo
+            return redirect(url_for('pagina_usuario'))
         else:
-            # Autenticación fallida, mostrar un mensaje de error en la página de inicio de sesión
             error = "Correo electrónico o contraseña incorrectos. Inténtalo de nuevo."
+            
+            # Verificar si el usuario no existe y redirigir a la página de registro
+            if not usuario_existe(correo):
+                return redirect(url_for('registro', error=error))
+            
             return render_template('inicio_sesion.html', error=error)
     else:
-        # Método GET: Mostrar la página de inicio de sesión
+        # Método GET: Mostrar la página de inicio de sesión o la de usuario si ya está logueado
+        if 'usuario' in session:
+            return redirect(url_for('pagina_usuario'))
         return render_template('inicio_sesion.html')
+    
+# Función para comprobar si un usuario ya existe en la base de datos
+def usuario_existe(correo):
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM usuarios WHERE correo = ?', (correo,))
+    usuario = cursor.fetchone()
+    conn.close()
+    return usuario is not None
+
+# Función para registrar un nuevo usuario en la base de datos
+def registrar_usuario(nombre, correo, contrasena):
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO usuarios (nombre, correo, contrasena, puntos) VALUES (?, ?, ?, 0)', (nombre, correo, contrasena))
+    conn.commit()
+    conn.close()
+
+# Función para autenticar un usuario utilizando la base de datos
+def autenticar_usuario_bd(correo, contrasena):
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?', (correo, contrasena))
+    usuario = cursor.fetchone()
+    conn.close()
+    return usuario is not None
+
+
+# página de usuario
+@app.route('/usuario')
+def pagina_usuario():
+    if 'usuario' in session:
+        usuario_actual = obtener_usuario_por_correo(session['usuario'])
+        return render_template('usuario.html', usuario=usuario_actual)
+    else:
+        return redirect(url_for('inicio_sesion'))
+    
+def obtener_usuario_por_correo(correo):
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT nombre FROM usuarios WHERE correo = ?', (correo,))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    if resultado:
+        nombre = resultado[0]
+        return {'nombre': nombre}
+    else:
+        return None
+
+
+# cerrar sesión
+@app.route('/cerrar_sesion')
+def cerrar_sesion():
+    session.pop('usuario', None)
+    return redirect(url_for('inicio_sesion'))
 
 @app.route('/pagina_inicio')
 def pagina_inicio():
@@ -127,26 +190,34 @@ def registro():
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
-    if request.method == 'POST':
+   if request.method == 'POST':
         # Obtener los datos del formulario
         nombre = request.form['nombre']
         correo = request.form['correo']
         contrasena = request.form['contrasena']
         
-        # Comprobar si el correo ya está registrado (simulación)
-        if any(usuario['correo'] == correo for usuario in usuarios):
+        # Comprobar si el correo ya está registrado en la base de datos
+        if usuario_existe(correo):
             error = "El correo electrónico ya está registrado. Inicia sesión o utiliza otro correo."
             return render_template('registro.html', error=error)
         
-        # Agregar el nuevo usuario a la lista (simulación)
-        usuarios.append({'nombre': nombre, 'correo': correo, 'contrasena': contrasena, 'puntos': 0})
+        # Agregar el nuevo usuario a la base de datos
+        registrar_usuario(nombre, correo, contrasena)
         
         # Redirigir al usuario a la página de inicio de sesión o a donde sea necesario
         return redirect(url_for('inicio_sesion'))
-    
+
 @app.route('/seguimiento', methods=['GET'])
 def seguimiento():
-    return render_template('seguimiento.html')
+    # Obtén las actividades de reciclaje del usuario desde la base de datos
+    conn = sqlite3.connect('reciclaje.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM actividades_reciclaje ORDER BY id DESC LIMIT 5')  # Limita a las últimas 5 actividades
+    actividades_reciclaje_usuario = cursor.fetchall()
+    conn.close()
+
+    # Renderiza la página de seguimiento con las actividades del usuario
+    return render_template('seguimiento.html', actividades=actividades_reciclaje_usuario)
 
 @app.route('/seguir', methods=['POST'])
 def seguir():
