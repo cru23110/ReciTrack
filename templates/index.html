@@ -31,11 +31,34 @@
         <div  class="contentColumn"><h1 class="pageTitle">Bienvenido a la Página de Inicio</h1></div>
         <div  class="contentColumn">
             <h2>Sugerencias de Reciclaje:</h2>
-            <ul>
-                {% for sugerencia in sugerencias %}
-                    <li>{{ sugerencia }}</li>
-                {% endfor %}
-            </ul>
+            <div id="consejos-container">
+                <p id="consejo-actual">{{ sugerencias[0] }}</p>
+            </div>
+            <script>
+                var sugerencias = [
+                "Recuerda reciclar el papel y cartón.",
+                "Utiliza bolsas reutilizables para reducir el plástico.",
+                "Separa adecuadamente los residuos para facilitar el reciclaje.",
+                "Evita el uso de pajillas de plástico; opta por alternativas reutilizables.",
+                "Compra productos a granel para reducir el empaque plástico.",
+                "Recicla los envases de vidrio, ya que son 100% reciclables.",
+                "Convierte los desechos orgánicos en compost para fertilizar tu jardín.",
+                "Usa botellas de agua recargables en lugar de botellas de un solo uso.",
+                "Recicla electrodomésticos y dispositivos electrónicos viejos de manera adecuada.",
+                "Opta por comprar productos hechos con materiales reciclados.",
+                ];
+
+                var indiceSugerenciaActual = 0;
+
+                function cambiarSugerencia() {
+                    var sugerenciaElemento = document.getElementById('consejo-actual');
+                    sugerenciaElemento.innerHTML = sugerencias[indiceSugerenciaActual];
+
+                    indiceSugerenciaActual = (indiceSugerenciaActual + 1) % sugerencias.length;
+                }
+
+                setInterval(cambiarSugerencia, 6000);
+            </script>
         </div>
     </section>
 </body>

@@ -8,7 +8,7 @@ def crear_bd():
     conn = sqlite3.connect('reciclaje.db')
     cursor = conn.cursor()
 
-    # Crear tablas en la base de datos (aquí debes definir la estructura de tus tablas)
+    # Crear tablas en la base de datos
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY,
@@ -62,12 +62,6 @@ def obtener_usuarios():
 
     conn.close()
     return lista_usuarios
-
-# usuarios = [
-#     {'correo': 'usuario1@example.com', 'contrasena': 'contrasena1', 'nombre': 'Juan', 'puntos': 100},
-#     {'correo': 'usuario2@example.com', 'contrasena': 'contrasena2', 'nombre': 'Mia', 'puntos': 85},
-#     {'correo': 'usuario3@example.com', 'contrasena': 'contrasena3', 'nombre': 'Linda', 'puntos': 120},
-# ]
 
 # Datos de prueba de seguimientos de reciclaje 
 seguimientos = []
@@ -185,7 +179,6 @@ def autenticar_usuario(correo, contrasena):
             return True
     return False
 
-# Mia
 @app.route('/registro', methods=['GET'])
 def registro():
     return render_template('registro.html')
@@ -206,7 +199,7 @@ def registrar():
         # Agregar el nuevo usuario a la base de datos
         registrar_usuario(nombre, correo, contrasena)
         
-        # Redirigir al usuario a la página de inicio de sesión o a donde sea necesario
+        # Redirigir al usuario a la página de inicio de sesión
         return redirect(url_for('inicio_sesion'))
 
 @app.route('/seguimiento', methods=['GET'])
@@ -261,6 +254,10 @@ def seguir():
 # Linda
 @app.route('/registro_actividades', methods=['GET', 'POST'])
 def registro_actividades():
+    if 'usuario' not in session:
+        # Si no hay un usuario registrado, redirige a la página de inicio de sesión
+        return redirect(url_for('inicio_sesion'))
+    
     if request.method == 'POST':
         # Obtener los datos del formulario
         material = request.form['material']
