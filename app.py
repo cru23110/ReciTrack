@@ -28,7 +28,8 @@ def crear_bd():
         CREATE TABLE IF NOT EXISTS actividades_reciclaje (
             id INTEGER PRIMARY KEY,
             material TEXT,
-            cantidad INTEGER
+            cantidad INTEGER,
+            categoria TEXT
         )
     ''')
 
@@ -169,8 +170,13 @@ def registro_actividades():
         categoria = request.form['categoria']  # Agregar un campo de selección de categoría en el formulario
         
         # Agregar la actividad de reciclaje con categoría a la lista (simulación)
-        actividades_reciclaje.append({'material': material, 'cantidad': cantidad, 'categoria': categoria})
-        
+        # actividades_reciclaje.append({'material': material, 'cantidad': cantidad, 'categoria': categoria})
+        conn = sqlite3.connect('reciclaje.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO actividades_reciclaje (material, cantidad, categoria) VALUES (?, ?, ?)', (material, cantidad, categoria))
+        conn.commit()
+        conn.close()
+
         # Redirigir al usuario a la página de inicio o a donde sea necesario
         return redirect(url_for('pagina_inicio'))
     

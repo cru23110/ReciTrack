@@ -21,13 +21,20 @@
     <section class="contentPage">
         <div  class="contentColumn"><h1 class="pageTitle">Registro de Actividades de Reciclaje</h1></div>
         <div  class="contentColumn">
-            <form method="POST" action="/registrar_actividad">
+            <form method="POST" action="/registro_actividades">
                 <label class="labelForm" for="material">Material:</label>
                 <input type="text" id="material" class="inputForm" name="material" required><br>
                 
                 <label class="labelForm" for="cantidad">Cantidad:</label>
                 <input type="number" id="cantidad" class="inputForm" name="cantidad" required><br>
                 
+                <label class="labelForm" for="categoria">Categoría:</label>
+                <select class="inputForm" id="categoria" name="categoria" required>
+                    <option value="plastico">Plástico</option>
+                    <option value="papel">Papel</option>
+                    <option value="vidrio">Vidrio</option>
+                </select>
+                <br>
                 <input type="submit" class="submitButton" value="Registrar Actividad">
             </form>
         </div>
