@@ -27,12 +27,25 @@
     <section class="contentPage">
         <div  class="contentColumn"><h1 class="pageTitle">Seguimiento de Reciclaje</h1></div>
         <div  class="contentColumn">
-            {% if actividades %}
-                <ul>
-                    {% for actividad in actividades_reciclaje %}
-                        <li>{{ actividad.material }} - {{ actividad.cantidad }} unidades - {{ actividad.categoria }}</li>
-                    {% endfor %}
-                </ul>
+            {% if actividades_recientes %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Cantidad (unidades)</th>
+                            <th>Categoría</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for actividad in actividades_recientes %}
+                            <tr>
+                                <td>{{ actividad[0] }}</td>
+                                <td>{{ actividad[1] }}</td>
+                                <td>{{ actividad[2] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
                 <p>No hay actividades de reciclaje registradas.</p>
             {% endif %}

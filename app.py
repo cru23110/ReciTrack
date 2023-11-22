@@ -28,9 +28,11 @@ def crear_bd():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS actividades_reciclaje (
             id INTEGER PRIMARY KEY,
+            usuario_id INTEGER,
             material TEXT,
             cantidad INTEGER,
-            categoria TEXT
+            categoria TEXT,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
         )
     ''')
 
@@ -209,15 +211,39 @@ def registrar():
 
 @app.route('/seguimiento', methods=['GET'])
 def seguimiento():
-    # Obtén las actividades de reciclaje del usuario desde la base de datos
+    if 'usuario' in session:
+        usuario_actual = obtener_usuario_por_correo_id(session['usuario'])
+        # Obtener las actividades recientes del usuario
+        actividades_recientes = obtener_actividades_recientes(usuario_actual[0])
+        return render_template('seguimiento.html', actividades_recientes=actividades_recientes)
+    else:
+        return redirect(url_for('inicio_sesion'))
+    
+def obtener_usuario_por_correo_id(correo):
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    
+    # Seleccionar el campo 'id' además de otros campos
+    cursor.execute('SELECT id, nombre, correo, puntos FROM usuarios WHERE correo = ?', (correo,))
+    usuario = cursor.fetchone()
+    
+    conn.close()
+    return usuario
+
+def obtener_actividades_recientes(usuario_id):
     conn = sqlite3.connect('reciclaje.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM actividades_reciclaje ORDER BY id DESC LIMIT 5')  # Limita a las últimas 5 actividades
-    actividades_reciclaje_usuario = cursor.fetchall()
+    cursor.execute('''
+        SELECT material, cantidad, categoria
+        FROM actividades_reciclaje
+        WHERE usuario_id = ?
+        ORDER BY id DESC
+        LIMIT 5  -- Obtener las últimas 5 actividades reciclaje
+    ''', (usuario_id,))
+    actividades_recientes = cursor.fetchall()
     conn.close()
 
-    # Renderiza la página de seguimiento con las actividades del usuario
-    return render_template('seguimiento.html', actividades=actividades_reciclaje_usuario)
+    return actividades_recientes
 
 @app.route('/seguir', methods=['POST'])
 def seguir():
@@ -236,21 +262,30 @@ def seguir():
 @app.route('/registro_actividades', methods=['GET', 'POST'])
 def registro_actividades():
     if request.method == 'POST':
+        # Obtener los datos del formulario
         material = request.form['material']
         cantidad = int(request.form['cantidad'])
-        categoria = request.form['categoria']  # Agregar un campo de selección de categoría en el formulario
-        
-        # Agregar la actividad de reciclaje con categoría a la lista (simulación)
-        # actividades_reciclaje.append({'material': material, 'cantidad': cantidad, 'categoria': categoria})
+        categoria = request.form['categoria']
+
+        # Obtener el ID del usuario activo
+        usuario_actual = obtener_usuario_por_correo_id(session['usuario'])
+        print(usuario_actual)
+        usuario_id = usuario_actual[0]  # Asegúrate de que esta es la posición correcta
+
+        # Agregar la actividad de reciclaje a la base de datos con el ID del usuario
         conn = sqlite3.connect('reciclaje.db')
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO actividades_reciclaje (material, cantidad, categoria) VALUES (?, ?, ?)', (material, cantidad, categoria))
+        cursor.execute('INSERT INTO actividades_reciclaje (usuario_id, material, cantidad, categoria) VALUES (?, ?, ?, ?)', (usuario_id, material, cantidad, categoria))
+        conn.commit()
+        # conn.close()
+
+        # Actualizar los puntos del usuario en la tabla usuarios
+        cursor.execute('UPDATE usuarios SET puntos = puntos + 1 WHERE id = ?', (usuario_id,))
         conn.commit()
         conn.close()
-
+        
         # Redirigir al usuario a la página de inicio o a donde sea necesario
-        return redirect(url_for('pagina_inicio'))
-    
+        # return redirect(url_for('pagina_inicio'))
     return render_template('registro_actividades.html')
 
 @app.route('/registrar_actividad', methods=['POST'])
