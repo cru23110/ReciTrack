@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 
 app = Flask(__name__, template_folder='templates')
-app.secret_key = 'tu_clave_secreta'
+app.secret_key = 'Gdsafg54dsT6'
 
 def crear_bd():
     conn = sqlite3.connect('reciclaje.db')
@@ -283,7 +283,7 @@ def registro_actividades():
         cursor.execute('UPDATE usuarios SET puntos = puntos + 1 WHERE id = ?', (usuario_id,))
         conn.commit()
         conn.close()
-        
+
         # Redirigir al usuario a la página de inicio o a donde sea necesario
         # return redirect(url_for('pagina_inicio'))
     return render_template('registro_actividades.html')
